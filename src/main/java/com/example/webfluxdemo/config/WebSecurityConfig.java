@@ -32,13 +32,17 @@ public class WebSecurityConfig {
         return httpSecurity
                 .exceptionHandling()
                 .authenticationEntryPoint(
-                        (swe, e) -> Mono.fromRunnable(
-                                () -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)
-                        ))
-                .accessDeniedHandler((swe, e) ->
-                        Mono.fromRunnable(
-                                () -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN)
-                        ))
+                        (swe, e) ->
+                                Mono.fromRunnable(
+                                        () -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)
+                                )
+                )
+                .accessDeniedHandler(
+                        (swe, e) ->
+                                Mono.fromRunnable(
+                                        () -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN)
+                                )
+                )
                 .and()
                 .csrf().disable()
                 .formLogin().disable()
@@ -48,7 +52,6 @@ public class WebSecurityConfig {
                 .authorizeExchange()
                 .pathMatchers("/", "/login", "/favicon.ico").permitAll()
                 .pathMatchers("/controller").hasRole("ADMIN")
-
                 .anyExchange().authenticated()
                 .and()
                 .build();

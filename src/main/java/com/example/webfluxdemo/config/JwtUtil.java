@@ -20,20 +20,17 @@ public class JwtUtil {
 
     @Value("${jwt.secret}")
     private String secret;
-
     @Value("${jwt.expiration}")
     private String expirationTime;
 
     public String extractUsername(String authToken) {
-
         return getClaimsFromToken(authToken)
                 .getSubject();
     }
 
     public Claims getClaimsFromToken(String authToken) {
         String key = Base64.getEncoder().encodeToString(secret.getBytes());
-        return Jwts
-                .parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(authToken)
@@ -43,7 +40,7 @@ public class JwtUtil {
     public boolean validateToken(String authToken) {
         return getClaimsFromToken(authToken)
                 .getExpiration()
-                .before(new Date());
+                .after(new Date());
     }
 
     public String generateToken(User user) {
@@ -61,6 +58,5 @@ public class JwtUtil {
                 .setExpiration(expirationDate)
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();
-
     }
 }

@@ -31,19 +31,19 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
             username = null;
             System.out.println(e);
         }
+
         if (username != null && jwtUtil.validateToken(authToken)) {
             Claims claims = jwtUtil.getClaimsFromToken(authToken);
             List<String> role = claims.get("role", List.class);
-
             List<SimpleGrantedAuthority> authorities = role.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
-
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
                     authorities
             );
+
             return Mono.just(authenticationToken);
         } else {
             return Mono.empty();
